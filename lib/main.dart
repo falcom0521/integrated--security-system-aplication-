@@ -1,7 +1,13 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:mini/Homepage.dart';
 import 'package:mini/authentication.dart';
 import 'package:mini/bottomNavigation.dart';
 import 'package:mini/passwordview.dart';
+import 'package:mini/hello.dart';
+import 'package:telephony/telephony.dart';
 
 void main() {
   runApp(MyApp());
@@ -11,7 +17,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        home: Home(),
+        home: Homepage(),
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           colorScheme: const ColorScheme.light(
@@ -21,9 +27,14 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   const Home({super.key});
 
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
