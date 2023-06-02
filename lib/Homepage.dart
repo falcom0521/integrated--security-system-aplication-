@@ -1,4 +1,8 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:telephony/telephony.dart';
 
 class Homepage extends StatefulWidget {
   @override
@@ -20,6 +24,8 @@ class _HomepageState extends State<Homepage>
     _rotationAnimation =
         Tween<double>(begin: 0, end: 10 * 3.14).animate(_animationController);
     _animationController.repeat();
+    askPermission();
+    // hello();
   }
 
   @override
@@ -28,8 +34,40 @@ class _HomepageState extends State<Homepage>
     super.dispose();
   }
 
+  final Telephony telephony = Telephony.instance;
+  void askPermission() async {
+    bool? permissionsGranted = await telephony.requestPhoneAndSmsPermissions;
+  }
+
+  int count = 0;
+  bool motion = false;
+  bool fire = false;
+  bool door = false;
   @override
   Widget build(BuildContext context) {
+    // void hello() async {
+    telephony.listenIncomingSms(
+        onNewMessage: (SmsMessage message) async {
+          // if(message.address==''){}
+          // {motion: true, fire: false, door: false}
+          Map res = jsonDecode(message.body!);
+          log(res.toString());
+          log((res['fire']).toString());
+          setState(() {
+            motion = res['motion'];
+            fire = res['fire'];
+            door = res['door'];
+          });
+          log('$motion, $fire, $door');
+        },
+        listenInBackground: false);
+    // JSON
+    // }
+
+    // if (count == 0) {
+    //   hello();
+    //   count++;
+    // }
     bool status_fire = true,
         status_motion = false,
         status_door = true,
@@ -174,7 +212,7 @@ class _HomepageState extends State<Homepage>
                 ),
                 IconButton(
                     icon: Icon(Icons.door_back_door_outlined),
-                    color: status_door == false
+                    color: door == false
                         ? Color.fromARGB(255, 250, 89, 78)
                         : Colors.green,
                     iconSize: 50,
@@ -219,7 +257,7 @@ class _HomepageState extends State<Homepage>
                 ),
                 Icon(
                   Icons.fireplace_rounded,
-                  color: status_fire == false
+                  color: fire == false
                       ? Color.fromARGB(255, 250, 89, 78)
                       : Colors.green,
                   size: 50,
@@ -259,7 +297,7 @@ class _HomepageState extends State<Homepage>
                 ),
                 Icon(
                   Icons.directions_run_outlined,
-                  color: status_motion == false
+                  color: motion == false
                       ? Color.fromARGB(255, 250, 89, 78)
                       : Colors.green,
                   size: 50,
