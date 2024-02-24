@@ -9,29 +9,13 @@ class Homepage extends StatefulWidget {
   _HomepageState createState() => _HomepageState();
 }
 
-class _HomepageState extends State<Homepage>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _rotationAnimation;
-
+class _HomepageState extends State<Homepage> {
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 100),
-    );
-    _rotationAnimation =
-        Tween<double>(begin: 0, end: 10 * 3.14).animate(_animationController);
-    _animationController.repeat();
+
     askPermission();
     // hello();
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
   }
 
   final Telephony telephony = Telephony.instance;
@@ -43,6 +27,7 @@ class _HomepageState extends State<Homepage>
   bool motion = false;
   bool fire = false;
   bool door = false;
+  bool status_Activated = true;
   @override
   Widget build(BuildContext context) {
     // void hello() async {
@@ -57,6 +42,11 @@ class _HomepageState extends State<Homepage>
             motion = res['motion'];
             fire = res['fire'];
             door = res['door'];
+            if (motion || fire || door == false) {
+              status_Activated = false;
+            } else {
+              status_Activated = true;
+            }
           });
           log('$motion, $fire, $door');
         },
@@ -71,7 +61,6 @@ class _HomepageState extends State<Homepage>
     bool status_fire = true,
         status_motion = false,
         status_door = true,
-        status_Activated = true,
         status_signal = true;
     return Scaffold(
         body: Stack(children: [
@@ -98,18 +87,15 @@ class _HomepageState extends State<Homepage>
           width: 80,
           child: Stack(
             children: [
-              RotationTransition(
-                turns: _rotationAnimation,
-                child: Icon(
-                  Icons.blur_on_sharp,
-                  color: (status_fire &&
-                          status_door &&
-                          status_signal &&
-                          status_motion)
-                      ? Color.fromARGB(255, 0, 255, 132)
-                      : Color.fromARGB(255, 226, 28, 28),
-                  size: 350,
-                ),
+              Icon(
+                Icons.blur_on_sharp,
+                color: (status_fire &&
+                        status_door &&
+                        status_signal &&
+                        status_motion)
+                    ? Color.fromARGB(255, 0, 255, 132)
+                    : Color.fromARGB(255, 226, 28, 28),
+                size: 350,
               ),
               Center(
                 child: SizedBox(
